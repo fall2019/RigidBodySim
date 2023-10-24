@@ -285,11 +285,7 @@ Mesh CreatePlaneMesh(std::vector<MaterialData>& globalMaterials, std::vector<Ima
 Mesh CreateTeapotMesh(ModelData& model, std::vector<MaterialData>& globalMaterials, std::vector<Image>& globalImages)
 {
     std::vector instances = {
-        InstanceData{ { 0.0f, 0.0f, -40.0f }, (uint32_t)globalMaterials.size() + 0, 1 },
-        //InstanceData{ { 0.0f, 0.0f, -20.0f }, (uint32_t)globalMaterials.size() + 1 },
-        //InstanceData{ { 0.0f, 0.0f,   0.0f }, (uint32_t)globalMaterials.size() + 2 },
-        //InstanceData{ { 0.0f, 0.0f,  20.0f }, (uint32_t)globalMaterials.size() + 3 },
-        //InstanceData{ { 0.0f, 0.0f,  40.0f }, (uint32_t)globalMaterials.size() + 4 },
+        InstanceData{ { 0.0f, 0.0f, -40.0f }, (uint32_t)globalMaterials.size() + 0, 1 }
     };
 
     auto& vertices = model.Shapes.front().Vertices;
@@ -810,6 +806,7 @@ int main()
     windowOptions.ErrorCallback = WindowErrorCallback;
 
     Window window(windowOptions);
+    window.SetTitle("RigidBodySim");
 
     VulkanContextCreateOptions vulkanOptions;
     vulkanOptions.VulkanApiMajorVersion = 1;
