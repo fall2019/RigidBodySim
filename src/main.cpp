@@ -292,11 +292,7 @@ Mesh CreateTeapotMesh(ModelData& model, std::vector<MaterialData>& globalMateria
     auto& indices = model.Shapes.front().Indices;
 
     std::array albedoTextures = {
-        std::vector<uint8_t>{ 255, 255, 255, 255 },
         std::vector<uint8_t>{ 150, 225, 100, 255 },
-        std::vector<uint8_t>{ 100, 150, 225, 255 },
-        std::vector<uint8_t>{ 255, 220,  60, 255 },
-        std::vector<uint8_t>{ 150, 150, 150, 255 },
     };
 
     std::array normalTextures = {
@@ -306,10 +302,6 @@ Mesh CreateTeapotMesh(ModelData& model, std::vector<MaterialData>& globalMateria
     std::array textures = {
         ImageData{ std::move(normalTextures[0]), Format::R8G8B8A8_UNORM, 1, 1 },
         ImageData{ std::move(albedoTextures[0]), Format::R8G8B8A8_UNORM, 1, 1 },
-        ImageData{ std::move(albedoTextures[1]), Format::R8G8B8A8_UNORM, 1, 1 },
-        ImageData{ std::move(albedoTextures[2]), Format::R8G8B8A8_UNORM, 1, 1 },
-        ImageData{ std::move(albedoTextures[3]), Format::R8G8B8A8_UNORM, 1, 1 },
-        ImageData{ std::move(albedoTextures[4]), Format::R8G8B8A8_UNORM, 1, 1 },
     };
 
     globalMaterials.push_back(MaterialData{
@@ -318,31 +310,6 @@ Mesh CreateTeapotMesh(ModelData& model, std::vector<MaterialData>& globalMateria
         0.0f, // metallic
         1.0f, // roughness
     });
-    globalMaterials.push_back(MaterialData{
-        (uint32_t)globalImages.size() + 2,
-        (uint32_t)globalImages.size(), // default normal
-        1.0f, // metallic
-        0.7f, // roughness
-    });
-    globalMaterials.push_back(MaterialData{
-        (uint32_t)globalImages.size() + 3,
-        (uint32_t)globalImages.size(), // default normal
-        0.0f, // metallic
-        0.0f, // roughness
-    });
-    globalMaterials.push_back(MaterialData{
-        (uint32_t)globalImages.size() + 4,
-        (uint32_t)globalImages.size(), // default normal
-        1.0f, // metallic
-        0.0f, // roughness
-    });
-    globalMaterials.push_back(MaterialData{
-        (uint32_t)globalImages.size() + 5,
-        (uint32_t)globalImages.size(), // default normal
-        0.8f, // metallic
-        0.5f, // roughness
-    });
-
     return CreateMesh(vertices, indices, instances, textures, globalImages);
 }
 
@@ -683,9 +650,9 @@ public:
         {
             for (auto& vert : shape.Vertices)
             {
-                Vector3 xi = Vector3(orientation * glm::vec4(vert.Position, 1.0));
-                xi += sharedResources.teapot.position;
-                Vector3 vi = sharedResources.teapot.v + cross(sharedResources.teapot.w, xi);
+                Vector3 localPos = Vector3(orientation * glm::vec4(vert.Position, 1.0));
+                Vector3 xi = localPos + sharedResources.teapot.position;
+                Vector3 vi = sharedResources.teapot.v + cross(sharedResources.teapot.w, localPos);
                 if (!CollideWithPlane(plane, xi))
                     continue;
                 if (dot(vi, plane.normal) >= 0)//moving away from each other
