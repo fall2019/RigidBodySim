@@ -43,7 +43,7 @@ void ShadowRenderPass::OnRender(RenderPassState state)
     auto& output = state.GetAttachment("ShadowDepth");
     state.Commands.SetRenderArea(output);
 
-    for (const auto& mesh : this->sharedResources.Meshes)
+    for (const auto& mesh : sharedResources.Meshes)
     {
         size_t indexCount = mesh.IndexBuffer.GetByteSize() / sizeof(ModelData::Index);
         size_t instanceCount = mesh.InstanceBuffer.GetByteSize() / sizeof(InstanceData);

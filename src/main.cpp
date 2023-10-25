@@ -6,7 +6,7 @@
 #include "glm/gtx/quaternion.hpp"
 #include "uniformPass.h"
 #include "resLoader.h"
-
+#include "camera.h"
 using namespace VulkanAbstractionLayer;
 
 void VulkanInfoCallback(const std::string& message)
@@ -23,61 +23,6 @@ void WindowErrorCallback(const std::string& message)
 {
     std::cerr << "[ERROR Window]: " << message << std::endl;
 }
-
-constexpr size_t MaxMaterialCount = 256;
-
-struct Camera
-{
-    Vector3 Position{ 40.0f, 30, -40 };
-    Vector2 Rotation{ 5.74f, 0.0f };
-    float Fov = 65.0f;
-    float MovementSpeed = 250.0f;
-    float RotationMovementSpeed = 2.5f;
-    float AspectRatio = 16.0f / 9.0f;
-    float ZNear = 0.1f;
-    float ZFar = 100000.0f;
-
-    void Rotate(const Vector2& delta)
-    {
-        this->Rotation += this->RotationMovementSpeed * delta;
-
-        constexpr float MaxAngleY = HalfPi - 0.001f;
-        constexpr float MaxAngleX = TwoPi;
-        this->Rotation.y = std::clamp(this->Rotation.y, -MaxAngleY, MaxAngleY);
-        this->Rotation.x = std::fmod(this->Rotation.x, MaxAngleX);
-    }
-    
-    void Move(const Vector3& direction)
-    {
-        Matrix3x3 view{
-            std::sin(Rotation.x), 0.0f, std::cos(Rotation.x), // forward
-            0.0f, 1.0f, 0.0f, // up
-            std::sin(Rotation.x - HalfPi), 0.0f, std::cos(Rotation.x - HalfPi) // right
-        };
-
-        this->Position += this->MovementSpeed * (view * direction);
-    }
-    
-    Matrix4x4 GetViewMatrix() const
-    {
-        Vector3 direction{
-            std::cos(this->Rotation.y) * std::sin(this->Rotation.x),
-            std::sin(this->Rotation.y),
-            std::cos(this->Rotation.y) * std::cos(this->Rotation.x)
-        };
-        return MakeLookAtMatrix(this->Position, direction, Vector3{0.0f, 1.0f, 0.0f});
-    }
-
-    Matrix4x4 GetProjectionMatrix() const
-    {
-        return MakePerspectiveMatrix(ToRadians(this->Fov), this->AspectRatio, this->ZNear, this->ZFar);
-    }
-
-    Matrix4x4 GetMatrix()
-    {
-        return this->GetProjectionMatrix() * this->GetViewMatrix();
-    }
-};
 
 int main()
 {
@@ -110,6 +55,7 @@ int main()
 
     Vulkan.InitializeContext(window.CreateWindowSurface(Vulkan), deviceOptions);
 
+    constexpr size_t MaxMaterialCount = 256;
     SharedResources sharedResources{
         Buffer{ sizeof(UniformSubmitRenderPass::CameraUniform), BufferUsage::UNIFORM_BUFFER | BufferUsage::TRANSFER_DESTINATION, MemoryUsage::GPU_ONLY },
         Buffer{ sizeof(UniformSubmitRenderPass::ModelUniform),  BufferUsage::UNIFORM_BUFFER | BufferUsage::TRANSFER_DESTINATION, MemoryUsage::GPU_ONLY },

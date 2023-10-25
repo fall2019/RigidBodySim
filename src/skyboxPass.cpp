@@ -5,7 +5,7 @@
 SkyboxRenderPass::SkyboxRenderPass(SharedResources& sharedResources)
     : sharedResources(sharedResources)
 {
-    this->skyboxSampler.Init(Sampler::MinFilter::LINEAR, Sampler::MagFilter::LINEAR, Sampler::AddressMode::CLAMP_TO_EDGE, Sampler::MipFilter::LINEAR);
+    skyboxSampler.Init(Sampler::MinFilter::LINEAR, Sampler::MagFilter::LINEAR, Sampler::AddressMode::CLAMP_TO_EDGE, Sampler::MipFilter::LINEAR);
 }
 
 void SkyboxRenderPass::SetupPipeline(PipelineState pipeline) 
@@ -17,7 +17,7 @@ void SkyboxRenderPass::SetupPipeline(PipelineState pipeline)
 
     pipeline.DescriptorBindings
         .Bind(0, "CameraUniformBuffer", UniformType::UNIFORM_BUFFER)
-        .Bind(8, "Skybox", this->skyboxSampler, UniformType::COMBINED_IMAGE_SAMPLER);
+        .Bind(8, "Skybox", skyboxSampler, UniformType::COMBINED_IMAGE_SAMPLER);
 
     pipeline.AddOutputAttachment("Output", AttachmentState::LOAD_COLOR);
     pipeline.AddOutputAttachment("OutputDepth", AttachmentState::LOAD_DEPTH_SPENCIL);

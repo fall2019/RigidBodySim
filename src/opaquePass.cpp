@@ -4,8 +4,8 @@
 OpaqueRenderPass::OpaqueRenderPass(SharedResources& sharedResources)
     : sharedResources(sharedResources)
 {
-    this->textureSampler.Init(Sampler::MinFilter::LINEAR, Sampler::MagFilter::LINEAR, Sampler::AddressMode::REPEAT, Sampler::MipFilter::LINEAR);
-    this->depthSampler.Init(Sampler::MinFilter::NEAREST, Sampler::MagFilter::NEAREST, Sampler::AddressMode::CLAMP_TO_EDGE, Sampler::MipFilter::NEAREST);
+    textureSampler.Init(Sampler::MinFilter::LINEAR, Sampler::MagFilter::LINEAR, Sampler::AddressMode::REPEAT, Sampler::MipFilter::LINEAR);
+    depthSampler.Init(Sampler::MinFilter::NEAREST, Sampler::MagFilter::NEAREST, Sampler::AddressMode::CLAMP_TO_EDGE, Sampler::MipFilter::NEAREST);
 }
 
 void OpaqueRenderPass::SetupPipeline(PipelineState pipeline) 
@@ -14,7 +14,7 @@ void OpaqueRenderPass::SetupPipeline(PipelineState pipeline)
         ShaderLoader::LoadFromSourceFile("src/main_vertex.glsl", ShaderType::VERTEX, ShaderLanguage::GLSL),
         ShaderLoader::LoadFromSourceFile("src/main_fragment.glsl", ShaderType::FRAGMENT, ShaderLanguage::GLSL)
     );
-
+     
     pipeline.VertexBindings = {
         VertexBinding{
             VertexBinding::Rate::PER_VERTEX,
@@ -34,12 +34,12 @@ void OpaqueRenderPass::SetupPipeline(PipelineState pipeline)
         .Bind(1, "MeshDataUniformBuffer", UniformType::UNIFORM_BUFFER)
         .Bind(2, "LightUniformBuffer", UniformType::UNIFORM_BUFFER)
         .Bind(3, "MaterialUniformBuffer", UniformType::UNIFORM_BUFFER)
-        .Bind(4, this->textureSampler, UniformType::SAMPLER)
+        .Bind(4, textureSampler, UniformType::SAMPLER)
         .Bind(5, "Textures", UniformType::SAMPLED_IMAGE)
-        .Bind(6, "ShadowDepth", this->depthSampler, UniformType::COMBINED_IMAGE_SAMPLER, ImageView::DEPTH_ONLY)
-        .Bind(7, "BRDFLUT", this->textureSampler, UniformType::COMBINED_IMAGE_SAMPLER)
-        .Bind(8, "Skybox", this->textureSampler, UniformType::COMBINED_IMAGE_SAMPLER)
-        .Bind(9, "SkyboxIrradiance", this->textureSampler, UniformType::COMBINED_IMAGE_SAMPLER);
+        .Bind(6, "ShadowDepth", depthSampler, UniformType::COMBINED_IMAGE_SAMPLER, ImageView::DEPTH_ONLY)
+        .Bind(7, "BRDFLUT", textureSampler, UniformType::COMBINED_IMAGE_SAMPLER)
+        .Bind(8, "Skybox", textureSampler, UniformType::COMBINED_IMAGE_SAMPLER)
+        .Bind(9, "SkyboxIrradiance", textureSampler, UniformType::COMBINED_IMAGE_SAMPLER);
 
     pipeline.AddOutputAttachment("Output", ClearColor{ 0.5f, 0.8f, 1.0f, 1.0f });
     pipeline.AddOutputAttachment("OutputDepth", ClearDepthStencil{ });
@@ -47,10 +47,10 @@ void OpaqueRenderPass::SetupPipeline(PipelineState pipeline)
 
 void OpaqueRenderPass::ResolveResources(ResolveState resolve) 
 {
-    resolve.Resolve("Textures", this->sharedResources.Textures);
-    resolve.Resolve("BRDFLUT", this->sharedResources.BRDFLUT);
-    resolve.Resolve("Skybox", this->sharedResources.Skybox);
-    resolve.Resolve("SkyboxIrradiance", this->sharedResources.SkyboxIrradiance);
+    resolve.Resolve("Textures", sharedResources.Textures);
+    resolve.Resolve("BRDFLUT", sharedResources.BRDFLUT);
+    resolve.Resolve("Skybox", sharedResources.Skybox);
+    resolve.Resolve("SkyboxIrradiance", sharedResources.SkyboxIrradiance);
 }
 
 void OpaqueRenderPass::OnRender(RenderPassState state) 
@@ -58,7 +58,7 @@ void OpaqueRenderPass::OnRender(RenderPassState state)
     auto& output = state.GetAttachment("Output");
     state.Commands.SetRenderArea(output);
 
-    for (const auto& mesh : this->sharedResources.Meshes)
+    for (const auto& mesh : sharedResources.Meshes)
     {
         size_t indexCount = mesh.IndexBuffer.GetByteSize() / sizeof(ModelData::Index);
         size_t instanceCount = mesh.InstanceBuffer.GetByteSize() / sizeof(InstanceData);

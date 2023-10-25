@@ -16,10 +16,10 @@ void UniformSubmitRenderPass::SetupPipeline(PipelineState pipeline)
 
 void UniformSubmitRenderPass::ResolveResources(ResolveState resolve) 
 {
-    resolve.Resolve("CameraUniformBuffer", this->sharedResources.CameraUniformBuffer);
-    resolve.Resolve("MeshDataUniformBuffer", this->sharedResources.MeshDataUniformBuffer);
-    resolve.Resolve("LightUniformBuffer", this->sharedResources.LightUniformBuffer);
-    resolve.Resolve("MaterialUniformBuffer", this->sharedResources.MaterialUniformBuffer);
+    resolve.Resolve("CameraUniformBuffer", sharedResources.CameraUniformBuffer);
+    resolve.Resolve("MeshDataUniformBuffer", sharedResources.MeshDataUniformBuffer);
+    resolve.Resolve("LightUniformBuffer", sharedResources.LightUniformBuffer);
+    resolve.Resolve("MaterialUniformBuffer", sharedResources.MaterialUniformBuffer);
 }
 
 void UniformSubmitRenderPass::OnRender(RenderPassState state) 
@@ -46,8 +46,8 @@ void UniformSubmitRenderPass::OnRender(RenderPassState state)
         );
     };
 
-    FillUniform(this->CameraUniform, this->sharedResources.CameraUniformBuffer);
-    FillUniform(this->ModelUniform, this->sharedResources.MeshDataUniformBuffer);
-    FillUniform(this->LightUniform, this->sharedResources.LightUniformBuffer);
-    FillUniformArray(this->sharedResources.Materials, this->sharedResources.MaterialUniformBuffer);
+    FillUniform(CameraUniform, sharedResources.CameraUniformBuffer);
+    FillUniform(ModelUniform, sharedResources.MeshDataUniformBuffer);
+    FillUniform(LightUniform, sharedResources.LightUniformBuffer);
+    FillUniformArray(sharedResources.Materials, sharedResources.MaterialUniformBuffer);
 }
